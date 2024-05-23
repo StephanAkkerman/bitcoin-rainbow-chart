@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 import matplotlib.pyplot as plt
+import nasdaqdatalink
 import numpy as np
 import pandas as pd
 from matplotlib.ticker import FuncFormatter
@@ -43,6 +44,12 @@ def get_data(file_path):
     """
     raw_data = pd.read_csv(file_path)
     raw_data["Date"] = pd.to_datetime(raw_data["Date"])
+
+    # Check if the latest value is older than today
+    if raw_data["Date"].max() < pd.Timestamp.today():
+        # Get new data
+        raw_data = pd.DataFrame(nasdaqdatalink.get("BCHAIN/MKPRU")).reset_index()
+
     raw_data = raw_data[raw_data["Value"] > 0]
     xdata = np.array([x + 1 for x in range(len(raw_data))])
     ydata = np.log(raw_data["Value"])

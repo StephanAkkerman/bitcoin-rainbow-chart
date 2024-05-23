@@ -49,6 +49,8 @@ def get_data(file_path):
     if raw_data["Date"].max() < pd.Timestamp.today():
         # Get new data
         raw_data = pd.DataFrame(nasdaqdatalink.get("BCHAIN/MKPRU")).reset_index()
+        # Save new data
+        raw_data.to_csv(file_path, index=False)
 
     raw_data = raw_data[raw_data["Value"] > 0]
     xdata = np.array([x + 1 for x in range(len(raw_data))])

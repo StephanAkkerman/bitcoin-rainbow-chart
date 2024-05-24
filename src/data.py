@@ -51,8 +51,7 @@ def get_data(file_path):
     xdata = np.array([x + 1 for x in range(len(raw_data))])
     ydata = np.log(raw_data["Value"])
     popt, _ = curve_fit(log_func, xdata, ydata)
-    fitted_ydata = log_func(xdata, popt[0], popt[1], popt[2])
-    return raw_data, fitted_ydata, popt
+    return raw_data, popt
 
 
 # Save the exchanges that are useful

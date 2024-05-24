@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -26,7 +27,7 @@ BACKGROUND_COLOR = "#0d1117"
 EXTEND_MONTHS = 9
 
 
-def create_plot(raw_data, fitted_ydata, popt):
+def create_plot(raw_data, popt):
 
     # Create plot
     fig, ax = plt.subplots(figsize=FIGURE_SIZE)
@@ -34,13 +35,29 @@ def create_plot(raw_data, fitted_ydata, popt):
     ax.set_facecolor(BACKGROUND_COLOR)
 
     # Plot rainbow bands and price data
-    plot_rainbow(ax, fitted_ydata, raw_data, popt)
+    plot_rainbow(ax, raw_data, popt)
     plot_price(ax, raw_data)
+
+    # Add halving lines
+    add_halving_lines(ax)
 
     # Configure plot appearance
     configure_plot(ax, raw_data)
 
     add_legend(ax)
+
+
+def add_halving_lines(ax):
+    """Add vertical lines for Bitcoin halving events."""
+    halving_dates = [
+        pd.Timestamp("2012-11-28"),  # First halving
+        pd.Timestamp("2016-07-09"),  # Second halving
+        pd.Timestamp("2020-05-11"),  # Third halving
+        pd.Timestamp("2024-04-20"),  # Fourth halving
+    ]
+
+    for halving_date in halving_dates:
+        ax.axvline(halving_date, color="white", linestyle="-", linewidth=1, alpha=0.5)
 
 
 def extend_dates(raw_data, months=EXTEND_MONTHS):
@@ -61,15 +78,12 @@ def extend_dates(raw_data, months=EXTEND_MONTHS):
     return pd.concat([raw_data["Date"], pd.Series(extended_dates)])
 
 
-def plot_rainbow(
-    ax, fitted_ydata, raw_data, popt, num_bands=NUM_BANDS, band_width=BAND_WIDTH
-):
+def plot_rainbow(ax, raw_data, popt, num_bands=NUM_BANDS, band_width=BAND_WIDTH):
     """
     Plot rainbow bands on the given axis.
 
     Args:
         ax (matplotlib.axes._subplots.AxesSubplot): Axis to plot on.
-        fitted_ydata (np.ndarray): Fitted Y data.
         raw_data (pd.DataFrame): Raw data.
         num_bands (int): Number of bands.
         band_width (float): Width of each band.
@@ -149,6 +163,13 @@ def configure_plot(ax, raw_data):
     ax.tick_params(axis="x", colors="white")
     ax.tick_params(axis="y", colors="white")
 
+    # Set x-axis major ticks to every year
+    ax.xaxis.set_major_locator(mdates.YearLocator())
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
+
+    # Rotate and align the tick labels for better readability
+    plt.setp(ax.get_xticklabels(), rotation=0)
+
 
 def add_legend(ax):
     # Create custom legend handles with square markers, including BTC price
@@ -187,3 +208,6 @@ def add_legend(ax):
         fontsize="small",
         labelcolor="white",
     )
+
+    # Adjust layout to reduce empty space around the plot
+    plt.subplots_adjust(left=0.05, right=0.975, top=0.875, bottom=0.1)

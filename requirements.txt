@@ -2,4 +2,4 @@ pandas==2.0.3
 numpy==1.24.4
 matplotlib==3.5.1
 scipy==1.13.1
-Nasdaq-Data-Link==1.0.4
+ccxt==4.3.31

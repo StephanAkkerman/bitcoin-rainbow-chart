@@ -199,7 +199,7 @@ def add_legend(ax):
     ]
 
     # Add legend
-    ax.legend(
+    legend = ax.legend(
         handles=legend_handles,
         loc="upper center",
         bbox_to_anchor=(0.5, 1.15),
@@ -208,6 +208,10 @@ def add_legend(ax):
         fontsize="small",
         labelcolor="white",
     )
+
+    # Make legend text bold
+    for text in legend.get_texts():
+        text.set_fontweight("bold")
 
     # Adjust layout to reduce empty space around the plot
     plt.subplots_adjust(left=0.05, right=0.975, top=0.875, bottom=0.1)
